@@ -36,4 +36,3 @@ def test_ai_settings_endpoint_validation():
 def test_ai_settings_temperature_bounds():
     with pytest.raises(ValidationError):
         AISettings(ai_temperature=3.5)  # Max is 2.0
-

@@ -23,7 +23,7 @@ def create_duckdb_views(conn: duckdb.DuckDBPyConnection, settings: Any = None) -
         try:
             conn.execute(
                 f"""
-                CREATE OR REPLACE VIEW silver_{table} AS
+                CREATE OR REPLACE TEMPORARY VIEW silver_{table} AS
                 SELECT * FROM read_parquet('{table_glob}')
                 """
             )
@@ -43,7 +43,7 @@ def create_duckdb_views(conn: duckdb.DuckDBPyConnection, settings: Any = None) -
         try:
             conn.execute(
                 f"""
-                CREATE OR REPLACE VIEW gold_{summary} AS
+                CREATE OR REPLACE TEMPORARY VIEW gold_{summary} AS
                 SELECT * FROM read_parquet('{summary_glob}')
                 """
             )

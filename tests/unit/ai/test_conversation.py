@@ -23,4 +23,3 @@ def test_conversation_lifecycle():
 
     conv.clear()
     assert len(conv.get_messages()) == 0
-

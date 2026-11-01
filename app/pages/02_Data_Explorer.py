@@ -1,5 +1,12 @@
 """Data Explorer page — Interactive drill-down into municipalities and polling stations."""
 
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 from app.components.filters import render_election_filters
 from app.components.tables import render_dataframe_with_download

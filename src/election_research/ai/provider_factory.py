@@ -37,4 +37,3 @@ def create_ai_provider(settings: AISettings | None = None) -> AIProvider:
 def get_cached_ai_provider() -> AIProvider:
     """Return a cached singleton provider instance to avoid redundant client creation."""
     return create_ai_provider()
-

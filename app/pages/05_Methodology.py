@@ -1,5 +1,12 @@
 """Methodology page — Documentation of sources, data processing, and statistical rigor."""
 
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 
 st.set_page_config(page_title="Metodologia — Brazil Election Insights", layout="wide")

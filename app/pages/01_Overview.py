@@ -1,5 +1,12 @@
 """Overview page — Consolidated national indicators and candidate rankings."""
 
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 from app.components.charts import (
     create_candidate_ranking_chart,
@@ -80,7 +87,7 @@ with col_left:
         fig_cand = create_candidate_ranking_chart(
             cand_df, title=f"Votação — {filters['office_name']}"
         )
-        st.plotly_chart(fig_cand, use_container_width=True)
+        st.plotly_chart(fig_cand, width="stretch")
     else:
         st.info("Nenhum candidato registrado para este cargo.")
 
@@ -91,7 +98,7 @@ with col_right:
         blank_votes=overview["total_blank_votes"],
         null_votes=overview["total_null_votes"],
     )
-    st.plotly_chart(fig_donut, use_container_width=True)
+    st.plotly_chart(fig_donut, width="stretch")
 
 st.markdown("---")
 
@@ -106,7 +113,7 @@ states_df = query_state_results(
 
 if len(states_df) > 0:
     fig_states = create_state_turnout_bar_chart(states_df)
-    st.plotly_chart(fig_states, use_container_width=True)
+    st.plotly_chart(fig_states, width="stretch")
 
     with st.expander("📋 Ver Tabela Detalhada por Estado (UF)"):
         render_dataframe_with_download(

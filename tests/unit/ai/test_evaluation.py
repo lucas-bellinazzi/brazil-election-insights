@@ -24,4 +24,3 @@ def test_run_full_evaluation():
     assert report.passed_cases > 0
     assert report.accuracy_pct > 0
     assert len(report.violations) == 0  # No unsupported fraud claims
-

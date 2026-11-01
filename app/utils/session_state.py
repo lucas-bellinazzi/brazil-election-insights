@@ -10,7 +10,7 @@ from election_research.database.connection import get_connection
 def get_cached_database():
     """Return a cached DuckDB connection with pre-registered Parquet views."""
     settings = get_settings()
-    return get_connection(db_path=settings.duckdb_path, read_only=False, register_views=True)
+    return get_connection(db_path=settings.duckdb_path, read_only=True, register_views=True)
 
 
 def init_session_state() -> None:

@@ -1,8 +1,16 @@
 """Brazil Election Insights — Main Application Landing Page."""
 
-import streamlit as st
-from app.utils.session_state import get_cached_database, init_session_state
+import sys
+from pathlib import Path
 
+# Ensure project root is in sys.path for robust package imports
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+import streamlit as st
+
+from app.utils.session_state import get_cached_database, init_session_state
 from election_research.database.queries import query_electoral_overview
 
 st.set_page_config(

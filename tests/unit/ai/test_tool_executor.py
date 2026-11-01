@@ -59,4 +59,3 @@ def test_executor_anomalies_detection():
     assert res.success is True
     assert "disclaimer" in res.provenance
     assert "fraude" in res.provenance["disclaimer"]
-

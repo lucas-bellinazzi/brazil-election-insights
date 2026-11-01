@@ -30,4 +30,3 @@ def test_create_local_provider():
     provider = create_ai_provider(settings)
     assert isinstance(provider, LocalInferenceProvider)
     assert provider.provider_id == "local"
-

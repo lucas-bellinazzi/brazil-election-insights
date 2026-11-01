@@ -5,6 +5,8 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import polars as pl
+
 from election_research.analytics.anomalies import detect_anomalies_iqr, detect_anomalies_zscore
 from election_research.core.config import get_settings
 from election_research.core.logging import get_logger, setup_logging
@@ -57,9 +59,20 @@ def generate_analytical_report(
         conn, year=year, election_round=rnd_int, office_code=1, limit=10000
     )
 
-    # Anomaly signals
-    z_anom = detect_anomalies_zscore(munis_df, metric_col="abstention_rate_pct", threshold=3.0)
-    iqr_anom = detect_anomalies_iqr(munis_df, metric_col="abstention_rate_pct", factor=1.5)
+    # Stratified Anomaly signals: Domestic (BR without ZZ) vs. Abroad (ZZ)
+    domestic_munis = munis_df.filter(pl.col("state_abbreviation") != "ZZ")
+    abroad_munis = munis_df.filter(pl.col("state_abbreviation") == "ZZ")
+
+    # Domestic anomalies
+    z_anom_dom = detect_anomalies_zscore(
+        domestic_munis, metric_col="abstention_rate_pct", threshold=3.0
+    )
+    iqr_anom_dom = detect_anomalies_iqr(
+        domestic_munis, metric_col="abstention_rate_pct", factor=1.5
+    )
+
+    # Abroad ranking
+    z_anom_abroad = abroad_munis.sort("abstention_rate_pct", descending=True)
 
     md_lines = [
         f"# Relatório Analítico Oficial — Eleições {year} ({election_round.upper()})",
@@ -99,20 +112,21 @@ def generate_analytical_report(
             "",
             "---",
             "",
-            "## 3. Investigação de Sinais Estatísticos de Anomalia (Abstenção)",
+            "## 3. Investigação de Sinais Estatísticos de Anomalia — Território Nacional (Brasil)",
             "",
             "> [!NOTE]",
             "> Sinais estatísticos indicam observações atípicas para investigação metodológica e empírica.",
             "> **Nunca constituem prova ou indício de manipulação ou fraude eleitoral.**",
+            "> Para evitar distorções de escala demográfica e logística, a análise abaixo isola os municípios do território nacional brasileiro (excluindo postos no exterior ZZ).",
             "",
-            f"### A. Desvios Paramétricos (Z-Score >= 3.0): {len(z_anom)} municípios sinalizados",
+            f"### A. Desvios Paramétricos Nacionais (Z-Score >= 3.0): {len(z_anom_dom)} municípios sinalizados",
             "",
             "| UF | Município | Eleitores | Abstenção (%) | Z-Score |",
             "| :---: | :--- | :---: | :---: | :---: |",
         ]
     )
 
-    for row in z_anom.head(10).to_dicts():
+    for row in z_anom_dom.head(10).to_dicts():
         md_lines.append(
             f"| {row['state_abbreviation']} | {row['municipality_name']} | "
             f"{row['total_eligible_voters']:,} | {row['abstention_rate_pct']:.2f}% | {row['anomaly_score']:.2f} |"
@@ -121,17 +135,37 @@ def generate_analytical_report(
     md_lines.extend(
         [
             "",
-            f"### B. Desvios Não-Paramétricos (IQR 1.5x): {len(iqr_anom)} municípios sinalizados",
+            f"### B. Desvios Não-Paramétricos Nacionais (IQR 1.5x): {len(iqr_anom_dom)} municípios sinalizados",
             "",
             "| UF | Município | Eleitores | Abstenção (%) | Limite Superior |",
             "| :---: | :--- | :---: | :---: | :---: |",
         ]
     )
 
-    for row in iqr_anom.head(10).to_dicts():
+    for row in iqr_anom_dom.head(10).to_dicts():
         md_lines.append(
             f"| {row['state_abbreviation']} | {row['municipality_name']} | "
             f"{row['total_eligible_voters']:,} | {row['abstention_rate_pct']:.2f}% | {row['upper_bound']:.2f}% |"
+        )
+
+    md_lines.extend(
+        [
+            "",
+            "---",
+            "",
+            "## 4. Comportamento Eleitoral no Exterior (UF ZZ — Embaixadas e Consulados)",
+            "",
+            "Postos no exterior operam sob dinâmica logística e demográfica distinta (grandes distâncias físicas até consulados, custos de viagem, ausência de voto obrigatório efetivo com multa simbólica).",
+            "",
+            "| Posto no Exterior | Eleitores Aptos | Comparecimento | Abstenção (%) |",
+            "| :--- | :---: | :---: | :---: |",
+        ]
+    )
+
+    for row in z_anom_abroad.head(10).to_dicts():
+        md_lines.append(
+            f"| {row['municipality_name']} | {row['total_eligible_voters']:,} | "
+            f"{row['total_actual_turnout']:,} | {row['abstention_rate_pct']:.2f}% |"
         )
 
     md_lines.append("")

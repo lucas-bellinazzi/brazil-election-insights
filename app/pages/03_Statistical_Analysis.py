@@ -1,5 +1,12 @@
 """Statistical Analysis page — Distribution exploration and anomaly detection signals."""
 
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 from app.components.charts import create_metric_histogram
 from app.components.filters import render_election_filters
@@ -71,7 +78,7 @@ with tab_dist:
         col_name=selected_metric_col,
         title=f"Histograma e Boxplot — {selected_metric_label} ({len(munis_df)} municípios)",
     )
-    st.plotly_chart(fig_hist, use_container_width=True)
+    st.plotly_chart(fig_hist, width="stretch")
 
 with tab_anom:
     st.subheader("Identificação de Sinais de Anomalia")
