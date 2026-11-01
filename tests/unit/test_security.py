@@ -209,4 +209,3 @@ class TestSQLInjectionResilience:
         except Exception as e:
             assert "gold_municipality_summary" in str(e)
             assert "syntax error" not in str(e).lower()
-

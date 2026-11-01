@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "duckdb>=1.2",
-    "openai>=1.60",
+    "huggingface-hub>=0.28.0",
     "plotly>=6.0",
     "polars>=1.20",
     "pyarrow>=19.0",
@@ -15,6 +15,13 @@ dependencies = [
     "scikit-learn>=1.6",
     "scipy>=1.15",
     "streamlit>=1.42",
+]
+
+[project.optional-dependencies]
+local-ai = [
+    "torch>=2.2.0",
+    "transformers>=4.48.0",
+    "accelerate>=0.30.0",
 ]
 
 [dependency-groups]

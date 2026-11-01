@@ -31,8 +31,8 @@ class Settings(BaseModel):
     data_dir_name: str = "data"
     duckdb_path_rel: str = "data/metadata/election.duckdb"
 
-    openai_api_key: str | None = None
-    openai_model: str = "gpt-4o"
+    hf_token: str | None = None
+    ai_model_id: str = "Qwen/Qwen3.5-4B"
 
     @classmethod
     def load(cls) -> "Settings":
@@ -52,8 +52,8 @@ class Settings(BaseModel):
             log_level=os.environ.get("LOG_LEVEL", "INFO").upper(),
             data_dir_name=os.environ.get("DATA_DIR", "data"),
             duckdb_path_rel=os.environ.get("DUCKDB_PATH", "data/metadata/election.duckdb"),
-            openai_api_key=os.environ.get("OPENAI_API_KEY"),
-            openai_model=os.environ.get("OPENAI_MODEL", "gpt-4o"),
+            hf_token=os.environ.get("HF_TOKEN"),
+            ai_model_id=os.environ.get("AI_MODEL_ID", "Qwen/Qwen3.5-4B"),
         )
 
     @property
