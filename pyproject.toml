@@ -1,0 +1,42 @@
+[project]
+name = "brazil-election-insights"
+version = "0.1.0"
+description = "A platform for analyzing Brazilian election data from official TSE sources."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.2",
+    "openai>=1.60",
+    "plotly>=6.0",
+    "polars>=1.20",
+    "pyarrow>=19.0",
+    "pydantic>=2.10",
+    "python-dotenv>=1.0",
+    "scikit-learn>=1.6",
+    "scipy>=1.15",
+    "streamlit>=1.42",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "pytest-cov>=6.0", "ruff>=0.9"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/election_research"]
