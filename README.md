@@ -25,8 +25,9 @@ An open-source analytical platform for the exploration, investigation, and stati
   - `01_Overview.py`: Consolidated national indicators, candidate rankings, and state comparisons.
   - `02_Data_Explorer.py`: Drill-down by municipality, electoral zone, and individual voting urns.
   - `03_Statistical_Analysis.py`: Distribution histograms, boxplots, and anomaly signals.
-  - `04_AI_Assistant.py`: Interactive chat interface powered by allowlisted tools.
-  - `05_Methodology.py`: Transparent documentation of sources, invariant identities, and ethics.
+  - `04_Closing_Times.py`: Temporal flow of polling station closures, 2-hour exceptional extension, territorial disparities, and candidate correlations.
+  - `05_AI_Assistant.py`: Interactive conversational assistant powered by Hugging Face (Qwen3.5-4B) and allowlisted deterministic tools.
+  - `06_Methodology.py`: Transparent documentation of sources, invariant identities, and ethics.
 - **Automated Reporting**: One-command reproducible markdown and JSON analytical reports.
 
 ---

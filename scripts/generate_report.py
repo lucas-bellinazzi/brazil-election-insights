@@ -45,7 +45,7 @@ def generate_analytical_report(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     rnd_int = 2 if "2" in election_round else 1
-    conn = get_connection(db_path=settings.duckdb_path, read_only=False, register_views=True)
+    conn = get_connection(db_path=settings.duckdb_path, read_only=True, register_views=True)
 
     timestamp_str = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     report_file = output_dir / f"election_report_{year}_{election_round}_{timestamp_str}.md"

@@ -100,6 +100,21 @@ class PollingSectionDetailsArgs(BaseToolArgs):
         return res
 
 
+class ClosingTimesAnalysisArgs(BaseToolArgs):
+    state_code: str | None = Field(
+        default=None, description="Sigla da UF opcional (ex: 'RJ', 'BA')"
+    )
+    election_year: int = Field(default=2026, ge=1988, le=2100)
+    election_round: int = Field(default=2, ge=1, le=2)
+
+    @field_validator("state_code")
+    @classmethod
+    def check_state(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        return sanitize_uf(v)
+
+
 # Tool specifications with JSON Schema for model consumption
 TOOL_DEFINITIONS: list[ToolDefinition] = [
     ToolDefinition(
@@ -275,6 +290,21 @@ TOOL_DEFINITIONS: list[ToolDefinition] = [
             "required": ["state_code", "polling_section_number"],
         },
     ),
+    ToolDefinition(
+        name="get_closing_times_analysis",
+        description="Analisa a distribuição temporal e territorial dos horários de encerramento das urnas e o impacto da prorrogação de 2 horas (17h às 19h BRT).",
+        parameters={
+            "type": "object",
+            "properties": {
+                "state_code": {
+                    "type": "string",
+                    "description": "Sigla da UF opcional para filtrar estado específico (ex: 'RJ', 'BA', 'SP')",
+                },
+                "election_year": {"type": "integer", "default": 2026},
+                "election_round": {"type": "integer", "default": 2},
+            },
+        },
+    ),
 ]
 
 
@@ -292,6 +322,7 @@ class ToolRegistry:
             "get_abstention_analysis": AbstentionAnalysisArgs,
             "detect_statistical_anomalies": DetectAnomaliesArgs,
             "get_polling_section_details": PollingSectionDetailsArgs,
+            "get_closing_times_analysis": ClosingTimesAnalysisArgs,
         }
 
     def list_tools(self) -> list[ToolDefinition]:

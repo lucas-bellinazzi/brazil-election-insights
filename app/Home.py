@@ -77,8 +77,9 @@ with col_left:
         - **[01. Panorama Geral (Overview)](Overview)**: Indicadores eleitorais consolidados, totais de votos e ranking dos candidatos.
         - **[02. Explorador de Dados (Data Explorer)](Data_Explorer)**: Filtros por estado, município, zona eleitoral e urna individual.
         - **[03. Análise Estatística (Statistical Analysis)](Statistical_Analysis)**: Distribuições de votos, dispersão e detecção de sinais de anomalia.
-        - **[04. Assistente de IA (AI Assistant)](AI_Assistant)**: Investigação interativa com ferramentas analíticas determinísticas.
-        - **[05. Metodologia e Integridade (Methodology)](Methodology)**: Dicionário de dados, auditoria de hashes SHA-512 e regras matemáticas.
+        - **[04. Horários de Encerramento (Closing Times)](Closing_Times)**: Análise temporal da prorrogação de votação, distribuição de fechamento e impactos territoriais.
+        - **[05. Assistente de IA (AI Assistant)](AI_Assistant)**: Investigação interativa com ferramentas analíticas determinísticas.
+        - **[06. Metodologia e Integridade (Methodology)](Methodology)**: Dicionário de dados, auditoria de hashes SHA-512 e regras matemáticas.
         """
     )
 

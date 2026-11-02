@@ -12,6 +12,7 @@ from election_research.ai.schemas import ToolCall, ToolResult
 from election_research.ai.tool_registry import (
     AbstentionAnalysisArgs,
     CandidateResultsArgs,
+    ClosingTimesAnalysisArgs,
     CompareGeographicResultsArgs,
     DetectAnomaliesArgs,
     MunicipalitySummaryArgs,
@@ -32,6 +33,8 @@ from election_research.core.logging import get_logger
 from election_research.database.connection import get_connection
 from election_research.database.queries import (
     query_candidate_rankings,
+    query_closing_time_candidates,
+    query_closing_time_overview,
     query_electoral_overview,
     query_municipality_results,
     query_polling_section_detail,
@@ -57,7 +60,7 @@ class ToolExecutor:
     def _get_connection(self) -> duckdb.DuckDBPyConnection:
         if self._conn is None:
             self._conn = get_connection(
-                db_path=self.settings.duckdb_path, read_only=False, register_views=True
+                db_path=self.settings.duckdb_path, read_only=True, register_views=True
             )
         return self._conn
 
@@ -120,6 +123,8 @@ class ToolExecutor:
                 data, prov, count = self._exec_detect_anomalies(conn, validated_args)  # type: ignore[arg-type]
             elif name == "get_polling_section_details":
                 data, prov, count = self._exec_polling_section_details(conn, validated_args)  # type: ignore[arg-type]
+            elif name == "get_closing_times_analysis":
+                data, prov, count = self._exec_closing_times_analysis(conn, validated_args)  # type: ignore[arg-type]
             else:
                 raise InvalidToolCallError(f"Tool handler not implemented for '{name}'")
 
@@ -365,3 +370,33 @@ class ToolExecutor:
             "section": args.polling_section_number,
         }
         return data, prov, 1 if data else 0
+
+    def _exec_closing_times_analysis(
+        self, conn: duckdb.DuckDBPyConnection, args: ClosingTimesAnalysisArgs
+    ) -> tuple[Any, dict, int]:
+        overview = query_closing_time_overview(
+            conn,
+            year=args.election_year,
+            election_round=args.election_round,
+            uf=args.state_code,
+        )
+        candidates_df = query_closing_time_candidates(
+            conn,
+            year=args.election_year,
+            election_round=args.election_round,
+            office_code=1,
+            uf=args.state_code,
+        )
+        data = {
+            "overview": overview,
+            "candidates_by_closing_regime": candidates_df.to_dicts()
+            if not candidates_df.is_empty()
+            else [],
+        }
+        prov = {
+            "source": "TSE - Boletins de Urna (BUs)",
+            "layer": "Silver - silver_polling_sections & silver_votes",
+            "scope": args.state_code or "Nacional (Brasil)",
+            "method": "Normalização para Horário de Brasília (BRT) e estratificação por regimes",
+        }
+        return data, prov, 1 if overview else 0
